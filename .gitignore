@@ -60,3 +60,7 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# Reestrs temp files
+reestrs/logs/
+reestrs/reports/
