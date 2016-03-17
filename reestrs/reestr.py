@@ -76,8 +76,8 @@ class UploadOperations(object):
             subject = 'Отчеты статистики по проектам по магазину %s за %s ' % (shop_id, format_date(date_))
 
         elif report_config.report_type == ReportType.IncorrectInvoices:
-            assert 'shop_id' in config, "Укажите shop_id для этой конфигурации: %s" % config
-            shop_id = str(config['shop_id'])
+            assert 'ik_shop_id' in config, "Укажите ik_shop_id для этой конфигурации: %s" % config
+            shop_id = str(config['ik_shop_id'])
 
             report = registry.create_incorrect_invoices_report(shop_id, date_)
             attachments = (report.filename,)

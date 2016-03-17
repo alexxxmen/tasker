@@ -409,7 +409,7 @@ class IncorrectInvoicesFile(object):
             # Write header
             writer.writerow(header)
 
-            for invoice in self._get_query():
+            for invoice in self._get_incorrect_invoices():
                 writer.writerow([
                     invoice.id,
                     invoice.shop_invoice_id,
@@ -420,7 +420,7 @@ class IncorrectInvoicesFile(object):
                     '{0} ({1})'.format(invoice.payway.name, invoice.payway_id),
                     invoice.project_id,
                     invoice.project.url,
-                    invoice.ik_shop_url
+                    invoice.ik_shop_url,
                 ])
 
         log.info("Файл %s успешно создан." % self.filename)
