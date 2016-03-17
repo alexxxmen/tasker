@@ -138,6 +138,7 @@ class Invoice(BaseModel):
     status = IntegerField()
     created = DateTimeField()
     description = CharField()
+    add_ons = TextField()
     shop_invoice_id = CharField()
     shop_currency = IntegerField()
     shop_amount = DecimalField()
@@ -157,6 +158,11 @@ class Invoice(BaseModel):
     @property
     def paymethod(self):
         return self.payway.pay_method
+
+    @property
+    def ik_shop_url(self):
+        add_ons = json.loads(self.add_ons) if self.add_ons else {}
+        return add_ons.get("ik_shop_url", "")
 
 
 class Withdraw(BaseModel):

@@ -47,5 +47,6 @@ INVOICE_STATISTIC_DIR = REPORTS_DIR + 'invoice_statistic/'
 WITHDRAW_STATISTIC_DIR = REPORTS_DIR + 'withdraw_statistic/'
 PAYMENT_INFO_DIR = REPORTS_DIR + 'payment_info/'
 PS_FEE_INCORRECT_DIR = REPORTS_DIR + 'ps_fee_incorrect/'
+INCORRECT_INVOICES_DIR = REPORTS_DIR + 'incorrect_invoices/'
 
 LOCALE = 'ru_UA.UTF-8'

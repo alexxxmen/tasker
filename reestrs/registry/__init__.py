@@ -3,7 +3,7 @@
 from .workbooks import ShopInvoiceWorkBook, PaywayInvoiceWorkBook, PaysytemInvoiceWorkBook, PaymethodInvoiceWorkBook,\
     ShopWithdrawWorkBook, PaywayWithdrawWorkBook, PaysytemWithdrawWorkBook, PaymethodWithdrawWorkBook,\
     ProjectInvoiceWorkBook
-from .csv_files import AccountShopOperationsFile, PsFeeIncorrectFile
+from .csv_files import AccountShopOperationsFile, PsFeeIncorrectFile, IncorrectInvoicesFile
 
 
 class Registry(object):
@@ -89,3 +89,6 @@ class Registry(object):
     def create_project_invoice_workbook(self, date, shop_id):
         """Создать ежедневный отчет статистики Invoice по проектам."""
         return ProjectInvoiceWorkBook('Invoice projects statistic', date, shop_id)
+
+    def create_incorrect_invoices_report(self, shop_id, date):
+        return IncorrectInvoicesFile(shop_id, date)

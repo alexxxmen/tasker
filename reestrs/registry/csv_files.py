@@ -7,7 +7,7 @@ from collections import namedtuple
 from peewee import fn
 
 from utils import get_day_range, format_date
-from config import PAYMENT_INFO_DIR, PS_FEE_INCORRECT_DIR
+from config import PAYMENT_INFO_DIR, PS_FEE_INCORRECT_DIR, INCORRECT_INVOICES_DIR
 from models import (Shop,
                     Invoice,
                     InvoicePayway,
@@ -22,7 +22,8 @@ from models import (Shop,
                     ShopSystemInvoiceTransaction,
                     ShopSystemWithdrawTransaction,
                     ShopTransferWriteOffTransaction,
-                    ShopTransferReceiveTransaction)
+                    ShopTransferReceiveTransaction,
+                    Project)
 
 
 log = logging.getLogger(__name__)
@@ -355,6 +356,71 @@ class PsFeeIncorrectFile(object):
                     format_number(invoice.ps_fee - invoice.ps_comission_amount),
                     invoice.ps_currency,
                     invoice.processed.strftime('%d-%m-%Y %H:%M:%S') if invoice.processed else '',
+                ])
+
+        log.info("Файл %s успешно создан." % self.filename)
+
+
+class IncorrectInvoicesFile(object):
+    def __init__(self, shop_id, date):
+        self._verify_shop(shop_id)
+        self._date = date
+        self._shop_id = shop_id
+        self.filename = INCORRECT_INVOICES_DIR + 'ik_incorrect_invoices_%s.csv' % format_date(date)
+        self._save()
+
+    def _get_query(self):
+        date_range = self._get_date_range()
+
+        query = (Invoice
+                 .select(Invoice, Project.url, InvoicePayway.name)
+                 .join(Project)
+                 .switch(Invoice)
+                 .join(InvoicePayway)
+                 .where(
+                    (Invoice.shop == self._shop_id) &
+                    (Invoice.created.between(*date_range)))
+                 .order_by(Invoice.id))
+
+        return query
+
+    def _get_incorrect_invoices(self):
+        invoices = self._get_query()
+        return [inv for inv in invoices if self._is_invoice_incorrect(inv)]
+
+    def _is_invoice_incorrect(self, invoice):
+        return invoice.project.url != invoice.ik_shop_url
+
+    def _get_date_range(self):
+        return get_day_range(self._date)
+
+    def _verify_shop(self, shop_id):
+        shop = Shop.get_by_id(shop_id)
+        if shop is None:
+            raise ValueError('Магазин с shop_id=%s не существует' % self.shop_id)
+
+    def _save(self):
+        header = ["invoice_id", "shop_invoice_id", "created", "status", "shop_amount",
+                  "shop_currency", "payway (id)", "project_id", "project_url", "ik_shop_url"]
+
+        with open(self.filename, 'wb') as csvfile:
+            writer = csv.writer(csvfile, delimiter=';')
+
+            # Write header
+            writer.writerow(header)
+
+            for invoice in self._get_query():
+                writer.writerow([
+                    invoice.id,
+                    invoice.shop_invoice_id,
+                    invoice.created.strftime('%d-%m-%Y %H:%M:%S'),
+                    invoice.status,
+                    invoice.shop_amount,
+                    invoice.shop_currency,
+                    '{0} ({1})'.format(invoice.payway.name, invoice.payway_id),
+                    invoice.project_id,
+                    invoice.project.url,
+                    invoice.ik_shop_url
                 ])
 
         log.info("Файл %s успешно создан." % self.filename)

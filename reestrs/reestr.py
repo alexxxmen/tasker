@@ -26,6 +26,7 @@ class ReportType:
     ShopUploading = 3
     PsFeeIncorrect = 4
     ProjectStatistic = 5
+    IncorrectInvoices = 6
 
 
 class UploadOperations(object):
@@ -73,6 +74,14 @@ class UploadOperations(object):
             work_book = registry.create_project_invoice_workbook(date_, shop_id)
             attachments = (work_book.location,)
             subject = 'Отчеты статистики по проектам по магазину %s за %s ' % (shop_id, format_date(date_))
+
+        elif report_config.report_type == ReportType.IncorrectInvoices:
+            assert 'shop_id' in config, "Укажите shop_id для этой конфигурации: %s" % config
+            shop_id = str(config['shop_id'])
+
+            report = registry.create_incorrect_invoices_report(shop_id, date_)
+            attachments = (report.filename,)
+            subject = 'Отчет некорректных инвойсов по магазину %s за %s ' % (shop_id, format_date(date_))
 
         else:
             raise Error('Неизвестный тип отчета = %s' % report_config.report_type)
