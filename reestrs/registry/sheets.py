@@ -190,7 +190,7 @@ class ShopSheet(Sheet):
         sheet['M1'] = format_date(previous_month_day(self._date))
         sheet['M2'] = u'Кол-во'
 
-        sheet.auto_filter.ref = 'D2:M2'
+        sheet.auto_filter.ref = 'A2:M2'
         self._format_header()
 
     def _add_right_vertical_borders(self):
@@ -263,7 +263,7 @@ class PaywaySheet(Sheet):
         sheet['M1'] = format_date(previous_month_day(self._date))
         sheet['M2'] = u'Кол-во'
 
-        sheet.auto_filter.ref = 'D2:M2'
+        sheet.auto_filter.ref = 'A2:M2'
         self._format_header()
 
     def _add_right_vertical_borders(self):
@@ -335,7 +335,7 @@ class PaysystemSheet(Sheet):
         sheet['L1'] = format_date(previous_month_day(self._date))
         sheet['L2'] = u'Кол-во'
 
-        sheet.auto_filter.ref = 'C2:L2'
+        sheet.auto_filter.ref = 'A2:L2'
         self._format_header()
 
     def _create_table_footer(self):
@@ -427,7 +427,7 @@ class PaymethodSheet(Sheet):
         sheet['L1'] = format_date(previous_month_day(self._date))
         sheet['L2'] = u'Кол-во'
 
-        sheet.auto_filter.ref = 'C2:L2'
+        sheet.auto_filter.ref = 'A2:L2'
         self._format_header()
 
     def _create_table_footer(self):
@@ -519,7 +519,7 @@ class ProjectSheet(Sheet):
         sheet['L1'] = format_date(previous_month_day(self._date))
         sheet['L2'] = u'Кол-во'
 
-        sheet.auto_filter.ref = 'C2:L2'
+        sheet.auto_filter.ref = 'A2:L2'
         self._format_header()
 
     def _create_table_footer(self):
