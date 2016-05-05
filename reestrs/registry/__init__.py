@@ -3,7 +3,7 @@
 from .workbooks import ShopInvoiceWorkBook, PaywayInvoiceWorkBook, PaysytemInvoiceWorkBook, PaymethodInvoiceWorkBook,\
     ShopWithdrawWorkBook, PaywayWithdrawWorkBook, PaysytemWithdrawWorkBook, PaymethodWithdrawWorkBook,\
     ProjectInvoiceWorkBook
-from .csv_files import AccountShopOperationsFile, PsFeeIncorrectFile, IncorrectInvoicesFile
+from .csv_files import AccountShopOperationsFile, PsFeeIncorrectFile, IncorrectInvoicesFile, PsFeeDifferenceFile
 
 
 class Registry(object):
@@ -92,3 +92,6 @@ class Registry(object):
 
     def create_incorrect_invoices_report(self, shop_id, date):
         return IncorrectInvoicesFile(shop_id, date)
+
+    def create_ps_fee_difference_report(self, date):
+        return PsFeeDifferenceFile(date)

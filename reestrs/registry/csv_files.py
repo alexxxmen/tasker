@@ -6,7 +6,7 @@ from collections import namedtuple
 
 from peewee import fn
 
-from utils import get_day_range, format_date
+from utils import get_day_range, format_date, get_period_range
 from config import PAYMENT_INFO_DIR, PS_FEE_INCORRECT_DIR, INCORRECT_INVOICES_DIR
 from models import (Shop,
                     Invoice,
@@ -421,6 +421,54 @@ class IncorrectInvoicesFile(object):
                     invoice.project_id,
                     invoice.project.url,
                     invoice.ik_shop_url,
+                ])
+
+        log.info("Файл %s успешно создан." % self.filename)
+
+
+class PsFeeDifferenceFile(object):
+
+    def __init__(self, date):
+        self._date = date
+        self.filename = PS_FEE_INCORRECT_DIR + 'ps_fee_difference_%s.csv' % format_date(date)
+        self._save()
+
+    def _get_date_range(self):
+        return get_period_range(self._date)
+
+    def _get_query(self):
+        date_range = self._get_date_range()
+
+        query = (Invoice
+                 .select(fn.SUM(Invoice.ps_fee).alias('ps_fee'),
+                         fn.SUM(Invoice.ps_comission_amount).alias('ps_comission_amount'),
+                         Invoice.ps_currency,
+                         InvoicePayway.name)
+                 .join(InvoicePayway)
+                 .where(
+                    ~(Invoice.ps_comission_amount >> None) &
+                    (Invoice.status == SUCCESS_INVOICE_STATUS) &
+                    (fn.ABS(Invoice.ps_fee - Invoice.ps_comission_amount) > MIN_DIFFERENCE) &
+                    (Invoice.processed.between(*date_range)))
+                 .group_by(InvoicePayway.name, Invoice.ps_currency))
+        return query
+
+    def _save(self):
+        header = ["payway_name", "ps_fee", "ps_comission_amount", "difference", "ps_currency"]
+
+        with open(self.filename, 'wb') as csvfile:
+            writer = csv.writer(csvfile, delimiter=';')
+
+            # Write header
+            writer.writerow(header)
+
+            for invoice in self._get_query():
+                writer.writerow([
+                    invoice.payway.name,
+                    format_number(invoice.ps_fee),
+                    format_number(invoice.ps_comission_amount),
+                    format_number(invoice.ps_fee - invoice.ps_comission_amount),
+                    invoice.ps_currency,
                 ])
 
         log.info("Файл %s успешно создан." % self.filename)

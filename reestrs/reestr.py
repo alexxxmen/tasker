@@ -7,7 +7,7 @@ import argparse
 from functools import partial
 
 from models import ReportConfig
-from utils import is_valid_json, send_email, parse_date, get_yesterday_date, Error, format_date
+from utils import is_valid_json, send_email, parse_date, get_yesterday_date, Error, format_date, get_month_name
 from config import MAIL_USERNAME, MAIL_SERVER, MAIL_PORT, MAIL_PASSWORD, LOG_TO, LOGGER_FILE,\
     MODERATORS, LOGGER_LEVEL
 from registry import Registry
@@ -27,6 +27,7 @@ class ReportType:
     PsFeeIncorrect = 4
     ProjectStatistic = 5
     IncorrectInvoices = 6
+    PsFeeDifference = 7
 
 
 class UploadOperations(object):
@@ -82,6 +83,11 @@ class UploadOperations(object):
             report = registry.create_incorrect_invoices_report(shop_id, date_)
             attachments = (report.filename,)
             subject = 'Отчет некорректных инвойсов по магазину %s за %s ' % (shop_id, format_date(date_))
+
+        elif report_config.report_type == ReportType.PsFeeDifference:
+            report = registry.create_ps_fee_difference_report(date_)
+            attachments = (report.filename,)
+            subject = 'Реестр по расхождению комиссий за %s ' % get_month_name(date_.month).encode('utf-8')
 
         else:
             raise Error('Неизвестный тип отчета = %s' % report_config.report_type)
