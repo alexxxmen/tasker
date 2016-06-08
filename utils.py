@@ -11,7 +11,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import COMMASPACE, formatdate
 
-from config import LOCALE
+
+LOCALE = 'ru_UA.UTF-8'
 
 
 class Error(Exception):
@@ -19,13 +20,28 @@ class Error(Exception):
 
 
 class Logger(object):
-    def __init__(self, file_handler, logger_name):
+    def __init__(self, logger_name, file_handler):
         self._log = logging.getLogger(logger_name)
         self._log.addHandler(file_handler)
         self._log.setLevel(file_handler.level)
 
     def __getattr__(self, *args, **kwds):
         return getattr(self._log, *args, **kwds)
+
+
+class Struct(object):
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+
+    def to_dict(self):
+        return self.__dict__
+
+    def __nonzero__(self):
+        return bool(self.__dict__)
+
+    def __repr__(self):
+        args = ['%s=%s' % (k, repr(v)) for (k, v) in vars(self).items()]
+        return "<{class_name}: ({data}) >".format(class_name=self.__class__.__name__, data=', '.join(args))
 
 
 def make_dir(dir_path):
