@@ -23,6 +23,9 @@ class ReportConfig(Model):
     config = TextField()
     description = TextField()
 
+    def get_config(self):
+        return json.loads(self.config or "{}")
+
 
 trio_db = PooledPostgresqlExtDatabase(**TRIO_DB_CONFIG)
 trio_db.commit_select = True
@@ -32,10 +35,6 @@ trio_db.autorollback = True
 class BaseModel(Model):
     class Meta:
         database = trio_db
-
-    def save(self, **kwds):
-        with trio_db.transaction():
-            Model.save(self, **kwds)
 
     @classmethod
     def get_by_id(cls, id):

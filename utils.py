@@ -4,6 +4,7 @@ import smtplib
 import json
 import logging
 import calendar
+import hashlib
 from datetime import date, timedelta, datetime
 from email import encoders
 from email.mime.base import MIMEBase
@@ -57,6 +58,10 @@ def is_valid_json(data):
     return True
 
 
+def md5_sign_string(string_to_sign):
+    return hashlib.md5(string_to_sign).hexdigest()
+
+
 def get_yesterday_date():
     return date.today() - timedelta(1)
 
@@ -89,9 +94,9 @@ def get_day_range(dt):
     return start, end
 
 
-def format_date(dt):
+def format_date(dt, fmt='%d-%m-%Y'):
     """Returns represantative date"""
-    return dt.strftime('%d-%m-%Y')
+    return dt.strftime(fmt)
 
 
 def previous_month_day(dt):

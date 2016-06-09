@@ -64,3 +64,7 @@ MODERATORS = ["odiscort@gmail.com", "rychyk@pay-trio.com"]
 
 # A list of people who get a reports
 DIRECTORS = ["odiscort@gmail.com", "rychyk@pay-trio.com"]
+
+# Trio API params
+TRIO_URL = "https://test-main.pay-trio.com"
+TRIO_SECRET = "admin_test"

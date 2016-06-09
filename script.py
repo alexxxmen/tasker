@@ -6,7 +6,7 @@ from utils import send_email
 from config import MAIL_USERNAME, MAIL_SERVER, MAIL_PORT, MAIL_PASSWORD, MODERATORS
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("balance_transfer")
 
 
 class Script(object):

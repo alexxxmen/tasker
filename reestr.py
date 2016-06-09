@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-
 import os
-import json
 import logging
 import argparse
-from functools import partial
 
-from reestrs.models import ReportConfig
 from reestrs.registry import Registry
-from utils import Logger, is_valid_json, send_email, parse_date, get_yesterday_date, Error, format_date, get_month_name
+from models import ReportConfig
+from utils import Logger, send_email, parse_date, get_yesterday_date
 from config import MAIL_USERNAME, MAIL_SERVER, MAIL_PORT, MAIL_PASSWORD, LOG_TO, LOGGER
 from script import Script
 
@@ -19,111 +16,38 @@ file_handler.setFormatter(LOGGER.formatter)
 logger = Logger('reestrs', file_handler)
 
 
-send_email = partial(send_email, send_from=MAIL_USERNAME, server=MAIL_SERVER,
-                     port=MAIL_PORT, user=MAIL_USERNAME, passwd=MAIL_PASSWORD)
-
-
-class ReportType:
-    InvoiceStatistic = 1
-    WithdrawStatistic = 2
-    ShopUploading = 3
-    PsFeeIncorrect = 4
-    ProjectStatistic = 5
-    IncorrectInvoices = 6
-    PsFeeDifference = 7
-
-
-class RegistryManager(object):
-    def __init__(self):
-        self.registry = Registry()
-
-    def get_report_config(self, report_config_id):
-        try:
-            return ReportConfig.get(ReportConfig.id == report_config_id)
-        except ReportConfig.DoesNotExist:
-            raise Error('Config c id=%s не найден.' % report_config_id)
-
-    def get_config(self, config):
-        if not is_valid_json(config):
-            raise Error("Поле 'config' должно быть в формате json. Config=%s" % config)
-        return json.loads(config)
-
-    def get_recipients(self, config):
-        if 'emails' not in config:
-            raise Error("Отсутствует поле 'emails' в конфигурации. Текущая конфигурация: %s" % config)
-        return config['emails']
-
-    def get_attachments(self, report_type):
-        pass
+def get_report_config(report_config_id):
+    try:
+        return ReportConfig.get(ReportConfig.id == report_config_id)
+    except ReportConfig.DoesNotExist:
+        raise Exception('Config c id=%s не найден.' % report_config_id)
 
 
 class RegistryScript(Script):
 
     @classmethod
     def execute(cls, options):
-        report_config_id = options.report_config_id
-        date = options.date
-        logger.info("Начало работы скрипта reestr за %s" % date)
-
-        registry_manager = RegistryManager()
-
-        report_config = cls.get_report_config(report_config_id)
-        config = cls.get_config(report_config.config)
-        recipients = cls.get_recipients(config)
-
-        attachments, subject = registry_manager.get_attachments()
+        logger.info("Начало работы скрипта reestr за %s" % options.date)
+        report_config = get_report_config(options.report_config_id)
+        config = report_config.get_config()
 
         registry = Registry()
-        if report_config.report_type == ReportType.InvoiceStatistic:
-            registry.create_invoice_workbooks(date)
-            attachments = registry.get_invoice_workbook_locations()
-            subject = 'Отчеты статистики по Invoice за %s ' % format_date(date)
+        report = registry.get_report(report_config.report_type, config, options.date)
+        recipients = config.get('emails')
+        if not recipients:
+            raise Exception("Отсутствует поле 'emails' в конфигурации. Текущая конфигурация: %s" % config)
 
-        elif report_config.report_type == ReportType.WithdrawStatistic:
-            registry.create_withdraw_workbooks(date)
-            attachments = registry.get_withdraw_workbook_locations()
-            subject = 'Отчеты статистики по Withdraw за %s ' % format_date(date)
+        subject = report.get_subject()
+        attachments = report.get_data()
 
-        elif report_config.report_type == ReportType.ShopUploading:
-            account_id = str(config.get('account_id', ''))
-            shop_id = str(config.get('shop_id', ''))
-
-            shop_report = registry.create_shop_operations_report(account_id, shop_id, date)
-            attachments = (shop_report.filename,)
-            subject = 'Реестр операций для аккаунта (%s) за дату (%s)' % (account_id, format_date(date))
-            if shop_id:
-                subject = 'Реестр операций для магазина (%s) за дату (%s)' % (shop_id, format_date(date))
-
-        elif report_config.report_type == ReportType.PsFeeIncorrect:
-            report = registry.create_ps_fee_incorrect_report(date)
-            attachments = (report.filename,)
-            subject = 'Реестр по расхождению комиссий за %s ' % format_date(date)
-
-        elif report_config.report_type == ReportType.ProjectStatistic:
-            assert 'shop_id' in config, "Укажите shop_id для этой конфигурации: %s" % config
-            shop_id = str(config['shop_id'])
-
-            work_book = registry.create_project_invoice_workbook(date, shop_id)
-            attachments = (work_book.location,)
-            subject = 'Отчеты статистики по проектам по магазину %s за %s ' % (shop_id, format_date(date))
-
-        elif report_config.report_type == ReportType.IncorrectInvoices:
-            assert 'ik_shop_id' in config, "Укажите ik_shop_id для этой конфигурации: %s" % config
-            shop_id = str(config['ik_shop_id'])
-
-            report = registry.create_incorrect_invoices_report(shop_id, date)
-            attachments = (report.filename,)
-            subject = 'Отчет некорректных инвойсов по магазину %s за %s ' % (shop_id, format_date(date))
-
-        elif report_config.report_type == ReportType.PsFeeDifference:
-            report = registry.create_ps_fee_difference_report(date)
-            attachments = (report.filename,)
-            subject = 'Реестр по расхождению комиссий за %s ' % get_month_name(date.month).encode('utf-8')
-
-        else:
-            raise Error('Неизвестный тип отчета = %s' % report_config.report_type)
-
-        send_email(subject, subject + '. Хорошего дня!', dest_to=recipients, attachments=attachments)
+        send_email(subject, subject + '. Хорошего дня!',
+                   send_from=MAIL_USERNAME,
+                   dest_to=recipients,
+                   server=MAIL_SERVER,
+                   port=MAIL_PORT,
+                   user=MAIL_USERNAME,
+                   passwd=MAIL_PASSWORD,
+                   attachments=attachments)
         logger.info("Отчет %s отправлен получателям %s" % (report_config.report_type, recipients))
 
     @classmethod
