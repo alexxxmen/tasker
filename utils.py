@@ -175,3 +175,20 @@ def parse_date(date_str, fmt="%d.%m.%Y"):
         return datetime.strptime(date_str, fmt).date()
     except ValueError:
         raise Error("Ошибка парсинга даты. Ожидаемый формат: 'дд.мм.гггг'. Текущий формат: %s" % date_str)
+
+
+def make_path(dir_path, filename):
+    """Makes the absolute path fo filename"""
+    return os.path.join(dir_path, filename)
+
+
+def as_text(s):
+    if isinstance(s, unicode):
+        return s.encode('utf-8')
+    return str(s)
+
+
+def as_unicode(s):
+    if isinstance(s, str):
+        return s.decode('utf-8')
+    return unicode(s)

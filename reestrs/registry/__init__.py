@@ -40,7 +40,7 @@ class InvoiceStatisticReport(Report):
 class WithdrawStatisticReport(Report):
     """Отчет статистики Withdraw по магазинам, платежным направлениям, платежным методам, платежным системам"""
     def __init__(self, date, **params):
-        super(InvoiceStatisticReport, self).__init__(date, **params)
+        super(WithdrawStatisticReport, self).__init__(date, **params)
         self.workbooks = [
             ShopWithdrawWorkBook('Withdraw shops statistic', date),
             PaywayWithdrawWorkBook('Withdraw payways statistic', date),

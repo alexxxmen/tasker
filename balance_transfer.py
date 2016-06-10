@@ -18,12 +18,36 @@ file_handler.setFormatter(LOGGER.formatter)
 logger = Logger('balance_transfer', file_handler)
 
 
+requests.packages.urllib3.disable_warnings()
+
+
 SOURCE_SHOP = 300000
 TARGET_SHOP = 300039
 
 DEFAULT_CURRENCY = 643
 
 MIN_AMOUNT = 1
+
+
+class Transfer(object):
+    def __init__(self, shop_purse):
+        self.shop_purse = shop_purse
+
+    def get_data(self):
+        return {
+            "source_shop": str(SOURCE_SHOP),
+            "target_shop": str(TARGET_SHOP),
+            "source_currency": str(DEFAULT_CURRENCY),
+            "target_currency": str(DEFAULT_CURRENCY),
+            "amount": str(int(self.shop_purse.balance)),  # Without cents
+            "amount_type": "source_amount",
+            "comments": u"Перевод от %s" % format_date(datetime.now(), fmt="%d.%m.%Y %H:%M:%S"),
+            "exch_rate": "1",
+            "exch_fee_percent": "0",
+            "source_exch_fee": True,
+            "source_fee_fix": "0",
+            "target_fee_fix": "0",
+        }
 
 
 class TrioException(Exception):
@@ -58,7 +82,10 @@ class Trio(object):
         return self._check_response(resp)
 
     def _send_request(self, url, data, headers={"Content-Type": "application/json"}):
-        return requests.post(url=url, data=json.dumps(data), headers=headers, verify=False)
+        logger.info("Started request with params: %s on url=%s" % (str(data), url))
+        response = requests.post(url=url, data=json.dumps(data), headers=headers, verify=False)
+        logger.info("Response=%s" % response.text)
+        return response
 
     def _sign_request(self, request, sign_keys):
         sign_keys = sorted(sign_keys)
@@ -74,28 +101,10 @@ class Trio(object):
             if attr not in response_data:
                 raise TrioException("Trio response error: '%s' is not set" % attr)
 
+        if not response_data['data']:
+            raise TrioException(response_data['message'])
+
         return response_data
-
-
-class Transfer(object):
-    def __init__(self, shop_purse):
-        self.shop_purse = shop_purse
-
-    def get_data(self):
-        return {
-            "source_shop": str(SOURCE_SHOP),
-            "target_shop": str(TARGET_SHOP),
-            "source_currency": str(DEFAULT_CURRENCY),
-            "target_currency": str(DEFAULT_CURRENCY),
-            "amount": str(int(self.shop_purse.balance)),  # Without cents
-            "amount_type": "source_amount",
-            "comments": u"Перевод от %s" % format_date(datetime.now(), fmt="%d.%m.%Y %H:%M:%S"),
-            "exch_rate": "1",
-            "exch_fee_percent": "0",
-            "source_exch_fee": "0",  # str необходим для string_to_sign
-            "source_fee_fix": "0",
-            "target_fee_fix": "0",
-        }
 
 
 class TransferBalanceScript(Script):

@@ -6,7 +6,7 @@ from collections import namedtuple
 
 from peewee import fn
 
-from utils import get_day_range, format_date, get_period_range
+from utils import get_day_range, format_date, get_period_range, make_path
 from config import PAYMENT_INFO_DIR, PS_FEE_INCORRECT_DIR, INCORRECT_INVOICES_DIR
 from models import (Shop,
                     Invoice,
@@ -73,7 +73,7 @@ class AccountShopOperationsFile(object):
         self.account_id = account_id
         self.shop_id = shop_id
         self._date = date
-        self.filename = PAYMENT_INFO_DIR + 'Payment_info_%s.csv' % format_date(date)
+        self.filename = make_path(PAYMENT_INFO_DIR, 'Payment_info_%s.csv' % format_date(date))
 
         if account_id:
             self._verify_account()
@@ -308,7 +308,7 @@ class PsFeeIncorrectFile(object):
 
     def __init__(self, date):
         self._date = date
-        self.filename = PS_FEE_INCORRECT_DIR + 'ps_fee_incorrect_%s.csv' % format_date(date)
+        self.filename = make_path(PS_FEE_INCORRECT_DIR, 'ps_fee_incorrect_%s.csv' % format_date(date))
         self._save()
 
     def _get_date_range(self):
@@ -366,7 +366,7 @@ class IncorrectInvoicesFile(object):
         self._verify_shop(shop_id)
         self._date = date
         self._shop_id = shop_id
-        self.filename = INCORRECT_INVOICES_DIR + 'ik_incorrect_invoices_%s.csv' % format_date(date)
+        self.filename = make_path(INCORRECT_INVOICES_DIR, 'ik_incorrect_invoices_%s.csv' % format_date(date))
         self._save()
 
     def _get_query(self):
@@ -430,7 +430,7 @@ class PsFeeDifferenceFile(object):
 
     def __init__(self, date):
         self._date = date
-        self.filename = PS_FEE_INCORRECT_DIR + 'ps_fee_difference_%s.csv' % format_date(date)
+        self.filename = make_path(PS_FEE_INCORRECT_DIR, 'ps_fee_difference_%s.csv' % format_date(date))
         self._save()
 
     def _get_date_range(self):

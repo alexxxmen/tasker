@@ -40,8 +40,9 @@ LOG_TO = os.path.join(BASE_DIR, 'logs')
 LOGGER = Struct(
     level=logging.DEBUG,
     formatter=logging.Formatter("%(asctime)s [%(levelname)s] - %(name)s:%(message)s"),
-    reestr_file="reestrs_{date:%Y-%m-%d}.log".format(date=date.today()),
-    btransfer_file="balance_transfers_{date:%Y-%m-%d}.log".format(date=date.today()),
+    reestr_file="reestrs_{date:%Y-%m-%d}.log".format(date=date.today()),  # Log file for reestrs
+    btransfer_file="balance_transfers_{date:%Y-%m-%d}.log".format(date=date.today()),  # Log file for balance transfer
+    script_file="script_{date:%Y-%m-%d}.log".format(date=date.today()),  # Log file for overall scripts info
 )
 
 # SMTP settings

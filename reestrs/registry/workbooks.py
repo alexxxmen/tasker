@@ -6,7 +6,7 @@ from collections import OrderedDict
 import openpyxl
 
 from models import Currency, Shop
-from utils import format_date
+from utils import format_date, make_path
 from .sheets import Sheet
 from config import INVOICE_STATISTIC_DIR, WITHDRAW_STATISTIC_DIR
 from .invoice_sheets import ShopInvoiceSheet, PaywayInvoiceSheet, PaysystemInvoiceSheet, PaymethodInvoiceSheet,\
@@ -54,14 +54,14 @@ class WorkBook(object):
 
 class InvoiceWorkbook(WorkBook):
     def save(self):
-        self.location = INVOICE_STATISTIC_DIR + self.name
+        self.location = make_path(INVOICE_STATISTIC_DIR, self.name)
         self._wb.save(self.location)
         log.info("Файл %s успешно создан" % self.location)
 
 
 class WithdrawWorkbook(WorkBook):
     def save(self):
-        self.location = WITHDRAW_STATISTIC_DIR + self.name
+        self.location = make_path(WITHDRAW_STATISTIC_DIR, self.name)
         self._wb.save(self.location)
         log.info("Файл %s успешно создан" % self.location)
 
