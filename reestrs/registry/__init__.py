@@ -16,6 +16,7 @@ class Report(object):
         raise NotImplementedError("Override `get_subject` method")
 
     def get_data(self):
+        """Must return a tuple of paths of files"""
         raise NotImplementedError("Override `get_data` method")
 
 
@@ -71,7 +72,7 @@ class ShopUploadingReport(Report):
         return subject
 
     def get_data(self):
-        return self.shop_report.filename
+        return (self.shop_report.filename,)
 
 
 class PsFeeIncorrectReport(Report):
@@ -84,7 +85,7 @@ class PsFeeIncorrectReport(Report):
         return 'Реестр по расхождению комиссий за {}'.format(format_date(self.date))
 
     def get_data(self):
-        return self.report.filename
+        return (self.report.filename,)
 
 
 class ProjectStatisticReport(Report):
@@ -99,7 +100,7 @@ class ProjectStatisticReport(Report):
         return 'Отчеты статистики по проектам по магазину {0} за {1}'.format(self.shop_id, format_date(self.date))
 
     def get_data(self):
-        return self.workbook.location
+        return (self.workbook.location,)
 
 
 class IncorrectInvoicesReport(Report):
@@ -114,7 +115,7 @@ class IncorrectInvoicesReport(Report):
         return 'Отчет некорректных инвойсов по магазину {0} за {1}'.format(self.shop_id, format_date(self.date))
 
     def get_data(self):
-        return self.report.filename
+        return (self.report.filename,)
 
 
 class PsFeeDifferenceReport(Report):
@@ -127,7 +128,7 @@ class PsFeeDifferenceReport(Report):
         return 'Реестр по расхождению комиссий за {}'.format(get_month_name(self.date.month).encode('utf-8'))
 
     def get_data(self):
-        return self.report.filename
+        return (self.report.filename,)
 
 
 class Registry(object):

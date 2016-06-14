@@ -3,6 +3,7 @@ import os
 import time
 import logging
 import argparse
+import traceback
 
 from utils import send_email, Logger, as_text
 from config import MAIL_USERNAME, MAIL_SERVER, MAIL_PORT, MAIL_PASSWORD, MODERATORS, LOGGER, LOG_TO
@@ -33,10 +34,11 @@ class Script(object):
             logger.info("The script %s has started to execute" % cls.__name__)
             cls.execute(options)
             logger.info("The script %s finished with the time=%s" % (cls.__name__, time.time() - start_time))
-        except Exception as e:
+        except Exception:
             logger.exception("Occured error in %s" % cls.__name__)
             subject = 'Произошла ошибка в скрипте %s' % cls.__name__
-            send_email(subject, as_text(e.message),
+            message = traceback.format_exc()
+            send_email(subject, as_text(message),
                        send_from=MAIL_USERNAME,
                        server=MAIL_SERVER,
                        port=MAIL_PORT,
