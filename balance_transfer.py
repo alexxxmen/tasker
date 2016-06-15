@@ -21,8 +21,8 @@ logger = Logger('balance_transfer', file_handler)
 requests.packages.urllib3.disable_warnings()
 
 
-SOURCE_SHOP = 300000
-TARGET_SHOP = 300039
+SOURCE_SHOP = 300267
+TARGET_SHOP = 300222
 
 DEFAULT_CURRENCY = 643
 
