@@ -29,10 +29,9 @@ DEFAULT_CURRENCY = 643
 MIN_AMOUNT = 1
 
 # Default articles
-DEFAULT_SOURCE_AMOUNT_ARTICLE = 1
-DEFAULT_TARGET_AMOUNT_ARTICLE = 1
-DEFAULT_SOURCE_FEE_ARTICLE = 1
-DEFAULT_TARGET_FEE_ARTICLE = 1
+DEFAULT_SOURCE_AMOUNT_ARTICLE = 68
+DEFAULT_SOURCE_FEE_ARTICLE = 8
+DEFAULT_TARGET_FEE_ARTICLE = 8
 
 
 class Transfer(object):
@@ -54,7 +53,6 @@ class Transfer(object):
             "source_fee_fix": "0",
             "target_fee_fix": "0",
             "source_amount_article": str(DEFAULT_SOURCE_AMOUNT_ARTICLE),
-            "target_amount_article": str(DEFAULT_TARGET_AMOUNT_ARTICLE),
             "source_fee_article": str(DEFAULT_SOURCE_FEE_ARTICLE),
             "target_fee_article": str(DEFAULT_TARGET_FEE_ARTICLE),
         }
@@ -72,7 +70,7 @@ class Trio(object):
     def shop_transfer(self, source_shop, target_shop, source_currency, target_currency, amount,
                       amount_type, comments, exch_rate, exch_fee_percent, source_exch_fee,
                       source_fee_fix, target_fee_fix, source_amount_article,
-                      target_amount_article, source_fee_article, target_fee_article):
+                      source_fee_article, target_fee_article):
         data = {
             "source_shop": source_shop,
             "target_shop": target_shop,
@@ -87,7 +85,6 @@ class Trio(object):
             "source_fee_fix": source_fee_fix,
             "target_fee_fix": target_fee_fix,
             "source_amount_article": source_amount_article,
-            "target_amount_article": target_amount_article,
             "source_fee_article": source_fee_article,
             "target_fee_article": target_fee_article,
         }
