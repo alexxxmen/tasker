@@ -45,6 +45,15 @@ class Struct(object):
         return "<{class_name}: ({data}) >".format(class_name=self.__class__.__name__, data=', '.join(args))
 
 
+def get_request_info(request):
+    if request.method == "GET":
+        request_data = ""
+    else:
+        request_data = dict(request.json.items() if request.json else request.form.items())
+
+    return Struct(data=request_data, url=request.url, method=request.method, headers=request.headers)
+
+
 def make_dir(dir_path):
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)

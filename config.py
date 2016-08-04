@@ -2,6 +2,9 @@ import os
 import logging
 from datetime import date
 
+from apscheduler.executors.pool import ThreadPoolExecutor
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+
 from utils import Struct
 
 
@@ -40,6 +43,7 @@ LOG_TO = os.path.join(BASE_DIR, 'logs')
 LOGGER = Struct(
     level=logging.DEBUG,
     formatter=logging.Formatter("%(asctime)s [%(levelname)s] - %(name)s:%(message)s"),
+    file="log_{date:%Y-%m-%d}.log".format(date=date.today()),
     reestr_file="reestrs_{date:%Y-%m-%d}.log".format(date=date.today()),  # Log file for reestrs
     btransfer_file="balance_transfers_{date:%Y-%m-%d}.log".format(date=date.today()),  # Log file for balance transfer
     script_file="script_{date:%Y-%m-%d}.log".format(date=date.today()),  # Log file for overall scripts info
@@ -69,3 +73,14 @@ DIRECTORS = ["odiscort@gmail.com", "rychyk@pay-trio.com"]
 # Trio API params
 TRIO_URL = "https://test-main.pay-trio.com"
 TRIO_SECRET = "admin_test"
+
+# APScheduler params
+JOBSTORE_URL = '' # TODO
+THREADS = 10
+
+JOBSTORES = {'default': SQLAlchemyJobStore(url=JOBSTORE_URL)}
+EXECUTORS = {'default': ThreadPoolExecutor(THREADS)}
+JOB_DEFAULTS = {
+    'coalesce': True,
+    'max_instances': 1
+}
