@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tasks</title>
+</head>
+<body>
+<h3>Управление</h3>
+<a href="/pause">Pause Scheduler</a><br>
+<a href="/resume">Resume Scheduler</a><br>
+<br>
+<a href="/job/add">Добавить задачу</a>
+<br>
+<p>Scheduler status: {% if status == 0 %}stopped{% elif status == 1 %}started{% elif status == 2 %}paused{% else %}Unknown{% endif %}</p>
+<h3>Задачи</h3>
+{% if data %}
+{% for item in data %}
+<p>name: {{ item.name }}<br>
+id: {{ item.id }}<br>
+next_run_time: {{ item.next_run_time }}<br>
+args: {{ item.args }}<br>
+kwargs: {{ item.kwargs }}<br>
+trigger: {{ item.trigger }}<br>
+func_ref: {{ item.func_ref }}</p>
+<a href="/job/edit/{{ item.id }}">Edit</a>
+<a href="/job/pause/{{ item.id }}">Pause</a>
+<a href="/job/resume/{{ item.id }}">Resume</a>
+<a href="/job/remove/{{ item.id }}">Delete</a>
+{% endfor %}
+{% endif %}
+</body>
+</html>
