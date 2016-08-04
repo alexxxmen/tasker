@@ -35,8 +35,7 @@ class AddJobController(SchedulerController):
 
         data = self._request.form
         if not data:
-            raise Exception('Form is empty!')  # TODO Ex msg
-
+            raise Exception('Request data is empty')
         for attr in required_attrs:
             if attr not in data:
                 raise Exception('Invalid request. Parameter "%s" not found in "%s"' % (attr, data))  # TODO Ex msg
@@ -53,7 +52,7 @@ class AddJobController(SchedulerController):
 
         data = self._request.form
         if not data:
-            raise Exception('Form is empty!')  # TODO Ex msg
+            raise Exception('Request data is empty')
         for attr in required_attrs:
             if attr not in data:
                 raise Exception('Invalid request. Parameter "%s" not found in "%s"' % (attr, data))  # TODO Ex msg
