@@ -8,11 +8,11 @@ import logging
 import config
 from utils import Logger
 
-fh = logging.FileHandler(os.path.join("/home/alex/work/roller", config.LOGGER['file']))
-fh.setLevel(config.LOGGER['level'])
-fh.setFormatter(config.LOGGER['formatter'])
+fh = logging.FileHandler(os.path.join("/home/alex/work/roller", config.LOGGER.get('file')))
+fh.setLevel(config.LOGGER.get('level'))
+fh.setFormatter(config.LOGGER.get('formatter'))
 
-log = Logger(fh, 'Script Logger')
+log = Logger('Script Logger', fh)
 
 
 def run(**kwargs):

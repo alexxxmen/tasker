@@ -75,7 +75,7 @@ TRIO_URL = "https://test-main.pay-trio.com"
 TRIO_SECRET = "admin_test"
 
 # APScheduler params
-JOBSTORE_URL = '' # TODO
+JOBSTORE_URL = 'postgresql://daemon:12345@localhost:5432/daemon'  # TODO
 THREADS = 10
 
 JOBSTORES = {'default': SQLAlchemyJobStore(url=JOBSTORE_URL)}

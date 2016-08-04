@@ -8,13 +8,13 @@ from utils import Logger, get_request_info
 
 class SchedulerController(object):
     def __init__(self, request, scheduler):
-        self.log = Logger(fh, self.__class__.__name__)
+        self.log = Logger(self.__class__.__name__, fh)
         self._request = request
         self._scheduler = scheduler
 
     def call(self, *args, **kwargs):
         try:
-            self.log.debug("Start process request:" % get_request_info(self._request))
+            self.log.debug("Start process request: %s" % get_request_info(self._request))
             data = self._call(*args, **kwargs)
             self.log.debug('Finished')
             return data

@@ -37,6 +37,12 @@ class Struct(object):
     def to_dict(self):
         return self.__dict__
 
+    def get(self, key, default=None):
+        return self.__dict__.get(key, default)
+
+    def items(self):
+        return self.__dict__.items()
+
     def __nonzero__(self):
         return bool(self.__dict__)
 

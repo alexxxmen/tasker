@@ -12,7 +12,7 @@ class IndexController(object):
     def __init__(self, request, scheduler):
         self.request = request
         self.scheduler = scheduler
-        self.log = Logger(fh, self.__class__.__name__)
+        self.log = Logger(self.__class__.__name__, fh)
 
     def call(self):
         try:
