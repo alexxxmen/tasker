@@ -3,7 +3,7 @@
 import json
 
 from peewee import Model, CharField, DateTimeField, ForeignKeyField, TextField, IntegerField, DecimalField,\
-    BooleanField
+    BooleanField, datetime as peewee_datetime
 from playhouse.pool import PooledPostgresqlExtDatabase
 from config import TRIO_DB_CONFIG, ADMIN_DB_CONFIG
 
@@ -362,3 +362,29 @@ class ShopSystemInvoiceTransaction(BaseModel):
     currency = IntegerField()
     processed = DateTimeField()
     shop_purse_balance = DecimalField()
+
+
+class PaysystemPurse(BaseModel):
+    class Meta:
+        db_table = "paysystem_purses"
+
+    name = CharField()
+    currency = IntegerField()
+    paysystem = ForeignKeyField(Paysystem)
+    balance = DecimalField()   # рассчетный баланс
+    ps_balance = DecimalField()  # баланс в ПС, получаемый от Бинга или Геллера
+    updated = DateTimeField(default=peewee_datetime.datetime.now)
+
+
+class CurrencyRate(BaseModel):
+    class Meta:
+        db_table = "currency_rates"
+
+    from_currency = IntegerField()
+    to_currency = IntegerField()
+    input_rate = DecimalField()  # курс, используемый при рассчетах на ввод
+    input_fee_percent = DecimalField()  # процент конвертационной комиссии, при рассчетах на ввод
+    output_rate = DecimalField()    # курс, используемый при рассчетах на вывод
+    output_fee_percent = DecimalField()  # процент конвертационной комиссии, при рассчетах на вывод
+    updated = DateTimeField()
+    protocol_config = TextField()
