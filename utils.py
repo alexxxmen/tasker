@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import smtplib
-import json
 import logging
-import calendar
-import hashlib
-from datetime import date, timedelta, datetime
+from decimal import Decimal
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
@@ -14,10 +11,6 @@ from email.utils import COMMASPACE, formatdate
 
 
 LOCALE = 'ru_UA.UTF-8'
-
-
-class Error(Exception):
-    pass
 
 
 class Logger(object):
@@ -31,11 +24,27 @@ class Logger(object):
 
 
 class Struct(object):
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
+    def __init__(self, **kwds):
+        for k, v in kwds.items():
+            if isinstance(v, dict):
+                setattr(self, k, Struct(**v))
+            elif isinstance(v, Decimal):
+                setattr(self, k, float(v))
+            else:
+                setattr(self, k, v)
 
-    def to_dict(self):
-        return self.__dict__
+    def __str__(self):
+        _buffer = ""
+        for key, value in self.items():
+            if not isinstance(value, list):
+                _buffer += "%s=%s" % (key, unicode(value)) + ", "
+            else:
+                _buffer += "%s=%s" % (key, "[%s]" % ", ".join(unicode(item) for item in value)) + ", "
+
+        return "{ %s }" % _buffer[:-1]
+
+    def __iter__(self):
+        return iter(self.__dict__)
 
     def get(self, key, default=None):
         return self.__dict__.get(key, default)
@@ -44,11 +53,10 @@ class Struct(object):
         return self.__dict__.items()
 
     def __nonzero__(self):
-        return bool(self.__dict__)
+        return bool(self.items())
 
-    def __repr__(self):
-        args = ['%s=%s' % (k, repr(v)) for (k, v) in vars(self).items()]
-        return "<{class_name}: ({data}) >".format(class_name=self.__class__.__name__, data=', '.join(args))
+    def to_dict(self):
+        return self.__dict__
 
 
 def get_request_info(request):
@@ -58,86 +66,6 @@ def get_request_info(request):
         request_data = dict(request.json.items() if request.json else request.form.items())
 
     return Struct(data=request_data, url=request.url, method=request.method, headers=request.headers)
-
-
-def make_dir(dir_path):
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-
-
-def is_valid_json(data):
-    try:
-        json.loads(data)
-    except ValueError:
-        return False
-    return True
-
-
-def md5_sign_string(string_to_sign):
-    return hashlib.md5(string_to_sign).hexdigest()
-
-
-def get_yesterday_date():
-    return date.today() - timedelta(1)
-
-
-def convert_to_datetime(dt):
-    return datetime(dt.year, dt.month, dt.day, 0, 0)
-
-
-def format_date_range(dt):
-    start, end = dt
-    end -= timedelta(days=1)
-    fmt = '%d.%m.%Y'
-    return '%s-%s' % (start.strftime(fmt), end.strftime(fmt))
-
-
-def get_period_range(dt):
-    """Returns the end and beginning of the reporting date.
-    :param dt <datetime.date>"""
-    _date = dt
-    end = convert_to_datetime(_date) + timedelta(days=1)
-    start = _date.replace(day=1)
-    return start, end
-
-
-def get_day_range(dt):
-    """Returns the end and beginning of the reporting day.
-    :param dt <datetime.date>"""
-    start = convert_to_datetime(dt)
-    end = start + timedelta(days=1)
-    return start, end
-
-
-def format_date(dt, fmt='%d-%m-%Y'):
-    """Returns represantative date"""
-    return dt.strftime(fmt)
-
-
-def previous_month_day(dt):
-    """
-    Дата отчета за отчетный день в предыдущем месяце. Если отчет формируется 12.11.2015,
-    то данная дата будет – 11.10.2015. Если количество дней в месяце не совпадает, то берется последний день месяца
-    """
-    date_ = dt
-    first = date_.replace(day=1)
-    prev_month_date = first - timedelta(days=1)
-    monthrange = calendar.monthrange(prev_month_date.year, prev_month_date.month)[1]
-
-    day = monthrange if date_.day > monthrange else date_.day
-    return date(year=prev_month_date.year, month=prev_month_date.month, day=day)
-
-
-def get_month_name(month_no):
-    with calendar.TimeEncoding(LOCALE) as encoding:
-        s = calendar.month_name[month_no]
-        if encoding is not None:
-            s = s.decode(encoding)
-        return s
-
-
-def get_dynamic_range(curr, prev):
-    return "%s-%s" % (get_month_name(curr.month), get_month_name(prev.month))
 
 
 def send_email(subject, text, send_from, dest_to, server, port, user, passwd, attachments=None):
@@ -183,27 +111,3 @@ def send_email(subject, text, send_from, dest_to, server, port, user, passwd, at
     finally:
         if smtp_server:
             smtp_server.quit()
-
-
-def parse_date(date_str, fmt="%d.%m.%Y"):
-    try:
-        return datetime.strptime(date_str, fmt).date()
-    except ValueError:
-        raise Error("Ошибка парсинга даты. Ожидаемый формат: 'дд.мм.гггг'. Текущий формат: %s" % date_str)
-
-
-def make_path(dir_path, filename):
-    """Makes the absolute path fo filename"""
-    return os.path.join(dir_path, filename)
-
-
-def as_text(s):
-    if isinstance(s, unicode):
-        return s.encode('utf-8')
-    return str(s)
-
-
-def as_unicode(s):
-    if isinstance(s, str):
-        return s.decode('utf-8')
-    return unicode(s)
