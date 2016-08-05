@@ -2,7 +2,7 @@
 
 import ast
 
-from flask import redirect, url_for, render_template
+from flask import redirect, url_for, render_template, flash
 from apscheduler.triggers.cron import CronTrigger
 
 from controllers import SchedulerController
@@ -16,19 +16,17 @@ class AddJobController(SchedulerController):
         if self._request.method == "GET":
             return render_template('add.html')
         elif not self._request.method == "POST":
-            return redirect(url_for('.index'))
+            raise Exception("Unexpected request method type '%s'" % self._request.method)
 
         job_data = self._verify_job_data()
         trigger_data = self._verify_trigger_data()
-        job = None
-        try:
-            job = self._scheduler.add_job(trigger=CronTrigger(timezone=None, **trigger_data), **job_data)
-        except Exception:
-            self.log.exception('Error while adding job')
+
+        job = self._scheduler.add_job(trigger=CronTrigger(timezone=None, **trigger_data), **job_data)
 
         if job:
             return redirect(url_for('.index'))
-        return render_template('add.html', errors=["Job wasn't added"])
+        flash("Job wasn't added")
+        return render_template('add.html')
 
     def _verify_job_data(self):
         required_attrs = ("name", "func", "kwargs", "id")
@@ -40,10 +38,12 @@ class AddJobController(SchedulerController):
             if attr not in data:
                 raise Exception('Invalid request. Parameter "%s" not found in "%s"' % (attr, data))  # TODO Ex msg
 
-        result = {}
-        for attr in required_attrs:
-            if data[attr]:
-                result[attr] = data[attr] if attr != 'kwargs' else ast.literal_eval(data['kwargs'])
+        result = {
+            'id': data['id'],
+            'func': data['func'],
+            'name': data['name'] or None,
+            'kwargs': ast.literal_eval(data['kwargs'])
+        }
         return result
 
     def _verify_trigger_data(self):
@@ -57,8 +57,16 @@ class AddJobController(SchedulerController):
             if attr not in data:
                 raise Exception('Invalid request. Parameter "%s" not found in "%s"' % (attr, data))  # TODO Ex msg
 
-        result = {}
-        for attr in required_attrs:
-            if data[attr]:
-                result[attr] = data[attr] or None
+        result = {
+            'year': data['year'] or None,
+            'month': data['month'] or None,
+            'day': data['day'] or None,
+            'week': data['week'] or None,
+            'day_of_week': data['day_of_week'] or None,
+            'hour': data['hour'] or None,
+            'minute': data['minute'] or None,
+            'second': data['second'] or None,
+            'start_date': data['start_date'] or None,
+            'end_date': data['end_date'] or None,
+        }
         return result
