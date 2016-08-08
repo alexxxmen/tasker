@@ -13,10 +13,10 @@ class HandleSchedulerController(SchedulerController):
     def _call(self, action):
         if action == 'resume' and self._scheduler.state == APSchedulerStatus.Pause:
             self._scheduler.resume()
-            flash('Scheduler resumed')
+            flash('Scheduler resumed', 'info')
 
         elif action == 'pause' and self._scheduler.state == APSchedulerStatus.Start:
             self._scheduler.pause()
-            flash('Scheduler paused')
+            flash('Scheduler paused', 'info')
 
         return redirect(url_for('.index'))
