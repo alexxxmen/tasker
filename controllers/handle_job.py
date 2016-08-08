@@ -16,9 +16,9 @@ class HandleJobController(SchedulerController):
             raise Exception("Job wasn't found. Job id=%s" % self.job_id)
         if action == 'pause' and job.next_run_time:
             job.pause()
-            flash('Job was paused')
+            flash('Job "%s" was paused' % job.name, 'info')
         elif action == 'resume' and not job.next_run_time:
             job.resume()
-            flash('Job was resumed')
+            flash('Job "%s" was resumed' % job.name, 'info')
 
         return redirect(url_for('.index'))
