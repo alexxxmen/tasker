@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from flask import url_for, redirect
+from flask import url_for, redirect, flash
 
 from constants import APSchedulerStatus
 from controllers import SchedulerController
@@ -11,12 +11,12 @@ class HandleSchedulerController(SchedulerController):
         super(HandleSchedulerController, self).__init__(request, scheduler)
 
     def _call(self, action):
-        if action == 'resume':
-            if self._scheduler.state == APSchedulerStatus.Pause:
-                self._scheduler.resume()
+        if action == 'resume' and self._scheduler.state == APSchedulerStatus.Pause:
+            self._scheduler.resume()
+            flash('Scheduler resumed')
 
-        elif action == 'pause':
-            if self._scheduler.state == APSchedulerStatus.Start:
-                self._scheduler.pause()
+        elif action == 'pause' and self._scheduler.state == APSchedulerStatus.Start:
+            self._scheduler.pause()
+            flash('Scheduler paused')
 
         return redirect(url_for('.index'))
