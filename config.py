@@ -84,3 +84,5 @@ JOB_DEFAULTS = {
     'coalesce': True,
     'max_instances': 1
 }
+
+SECRET_KEY = 'SECRET'  # TODO
