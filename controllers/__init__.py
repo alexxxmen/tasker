@@ -14,7 +14,9 @@ class SchedulerController(object):
 
     def call(self, *args, **kwargs):
         try:
-            self.log.debug("Start process request: %s" % get_request_info(self._request))
+            request_info = get_request_info(self._request)
+            self.log.debug("Start process request: %s, %s, %s" %
+                           (request_info.url, request_info.data, request_info.method))
             data = self._call(*args, **kwargs)
             self.log.debug('Finished')
             return data
