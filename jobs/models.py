@@ -210,6 +210,8 @@ class ShopPurse(BaseModel):
     currency = IntegerField()
     shop = ForeignKeyField(Shop, related_name="purses")
     balance = DecimalField()
+    frozen = DecimalField()
+    is_active = BooleanField()
 
 
 class SystemInvoice(BaseModel):
@@ -388,3 +390,15 @@ class CurrencyRate(BaseModel):
     output_fee_percent = DecimalField()  # процент конвертационной комиссии, при рассчетах на вывод
     updated = DateTimeField()
     protocol_config = TextField()
+
+
+class CashGapHistory(BaseModel):
+    class Meta:
+        db_table = "cash_gap_history"
+
+    created = DateTimeField(default=peewee_datetime.datetime.now)
+    cash_gap = DecimalField()
+    courses = TextField()
+
+    def get_courses(self):
+        return json.loads(self.courses)

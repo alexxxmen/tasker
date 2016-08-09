@@ -86,3 +86,7 @@ JOB_DEFAULTS = {
 }
 
 SECRET_KEY = 'SECRET'  # TODO
+
+# Telegram params
+TELEGRAM_BOT_TOKEN = '269816990:AAF9MFxKiiixplndKlJ0CxnXIl0xBAi0PsY'
+TELEGRAM_BOT_API_URL = "https://api.telegram.org/bot"
