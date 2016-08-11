@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block head %}{% include 'includes/head.html' %}{% endblock head %}
+{% block header %}{% include 'includes/header.html' %}{% endblock header %}
+{% block content %}
+<body>
+<div class="main-container">
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert {% if category == 'info' %}alert-success {% else %} alert-danger {% endif %} alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <strong>{{ message }}</strong>
+    </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+    <div class="container">
+    <div class="row">
+        <div id="control-panel" class="right">
+            <h4>Control Panel</h4>
+            <div id="status"><strong>Status: {% if status == 0 %}stopped{% elif status == 1 %}started{% elif status == 2 %}paused{% else %}Unknown{% endif %}</strong></div>
+            <div id="btn-panel">
+                <a href="/pause" id="scheduler-pause" class="btn btn-primary btn-sm">Pause</a>
+                <a href="/resume" id="scheduler-resume" class="btn btn-primary btn-sm">Resume</a><br>
+                <a href="/job/add" id="add-job" class="btn btn-success">Добавить задачу</a>
+            </div>
+        </div>
+
+        <div id="task-list">
+            <h3>Список задач</h3>
+            <div id="task-group">
+                {% if data %}
+                {% for task in data %}
+                <div class="task-title"><strong>Name: </strong>{{ task.name }}</div>
+                <div class="task-id"><strong>ID: </strong>{{ task.id }}</div>
+                <div class="task-id"><strong>Next run time: </strong>{{ task.next_run_time }}</div>
+                <div class="task-id"><strong>Trigger: </strong>{{ task.trigger }}</div>
+                <div class="task-id"><strong>Function reference: </strong>{{ task.func_ref }}</div>
+                <div class="task-id"><strong>Task arguments: </strong>{{ task.kwargs }}</div>
+                <div class="btn-group">
+                    <a href="{% if task.next_run_time %}/job/pause/{{ task.id }}{% else %}/job/resume/{{ task.id }}{% endif %}" class="btn btn-default">
+                        {% if task.next_run_time %}Пауза{% else %}Возобновить{% endif %}
+                    </a>
+                    <a href="/job/edit/{{ task.id }}" class="btn btn-default">Изменить</a>
+                    <a href="/job/remove/{{ task.id }}" class="btn btn-danger">Удалить</a>
+                </div>
+                {% if not loop.last%}<hr>{% endif %}
+                {% endfor %}
+                {% else %}
+                <h5>Список задач пуст. <a href="/job/add">Добавить задачу</a></h5>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block footer %}{% include 'includes/footer.html' %}{% endblock footer %}

@@ -1,0 +1,29 @@
+#task-group{
+    padding: 20px;
+    border: solid 1px #DCDCDC;
+}
+
+#control-panel{
+    float: right;
+}
+
+#btn-panel{
+    margin-top: 10px;
+}
+
+
+#scheduler-pause{
+    margin-right: 7px;
+}
+
+#add-job{
+    margin-top: 5px;
+}
+
+#task-list{
+    width: 80%;
+}
+
+#task-list .btn-group{
+    margin-top: 10px;
+}
