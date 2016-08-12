@@ -13,3 +13,12 @@ TRIO_DB_CONFIG = dict(
     register_hstore=False,
     server_side_cursors=False
 )
+
+# SMTP settings
+MAIL_SERVER = ""
+MAIL_PORT = ''
+MAIL_USE_TLS = True
+MAIL_USERNAME = ""
+MAIL_PASSWORD = ""
+
+MODERATORS = ['petrunin@pay-trio.com', 'krementar@pay-trio.com']
