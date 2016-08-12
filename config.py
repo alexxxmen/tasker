@@ -1,4 +1,3 @@
-import os
 import logging
 from datetime import date
 
@@ -31,3 +30,13 @@ JOB_DEFAULTS = {
 }
 
 SECRET_KEY = 'mbXPvOOm6uBrsJdAjolJ'
+
+SMTP_SETTINGS = dict(
+    server='',
+    port='',
+    use_tls=True,
+    username='',
+    password=''
+)
+
+ERROR_EMAILS = ['petrunin@pay-trio.com', 'krementar@pay-trio.com']

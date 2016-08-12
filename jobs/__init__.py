@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from roller import fh
 from utils import Logger, send_email, as_text
-from config import MAIL_USERNAME, MAIL_SERVER, MAIL_PORT, MAIL_PASSWORD, MODERATORS
+from config import SMTP_SETTINGS, ERROR_EMAILS
 
 log = Logger("General", fh)
 
@@ -18,12 +18,12 @@ class _Job(object):
             self.log.exception("Error during job execution")
             subject = 'Произошла ошибка в скрипте %s' % self.__class__.__name__
             send_email(subject, as_text(e.message),
-                       send_from=MAIL_USERNAME,
-                       server=MAIL_SERVER,
-                       port=MAIL_PORT,
-                       user=MAIL_USERNAME,
-                       passwd=MAIL_PASSWORD,
-                       dest_to=MODERATORS)
+                       send_from=SMTP_SETTINGS['username'],
+                       server=SMTP_SETTINGS['server'],
+                       port=SMTP_SETTINGS['port'],
+                       user=SMTP_SETTINGS['username'],
+                       passwd=SMTP_SETTINGS['password'],
+                       dest_to=ERROR_EMAILS)
 
     def _execute(self, **kwargs):
         raise NotImplementedError("%s._execute" % self.__class__.__name__)

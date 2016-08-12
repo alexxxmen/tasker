@@ -58,7 +58,7 @@ def get_request_info(request):
     return Struct(data=request_data, url=request.url, method=request.method, headers=request.headers)
 
 
-def send_email(subject, text, send_from, dest_to, server, port, user, passwd, attachments=None):
+def send_email(subject, text, send_from, dest_to, server, port, user, passwd, attachments=[]):
     """Send an email with(out) attachments
 
     Args:
@@ -80,15 +80,14 @@ def send_email(subject, text, send_from, dest_to, server, port, user, passwd, at
     message.attach(MIMEText(text))
 
     # For all type of attachments
-    if attachments:
-        for att_file in attachments:
-            with open(att_file, 'rb') as attmnt:
-                att = MIMEBase("application", "octet-stream")
-                att.set_payload(attmnt.read())
-            encoders.encode_base64(att)
-            att.add_header("content-disposition", "attachment",
-                           filename=os.path.basename(att_file))
-            message.attach(att)
+    for att_file in attachments:
+        with open(att_file, 'rb') as attmnt:
+            att = MIMEBase("application", "octet-stream")
+            att.set_payload(attmnt.read())
+        encoders.encode_base64(att)
+        att.add_header("content-disposition", "attachment",
+                       filename=os.path.basename(att_file))
+        message.attach(att)
 
     smtp_server = None
     try:

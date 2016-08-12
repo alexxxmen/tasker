@@ -2,16 +2,14 @@
 
 import json
 import urllib
-import datetime
 from decimal import Decimal
 
 import requests
 from peewee import fn
 
-from roller import fh
 from utils import Struct
 from constants import ShopType
-from config import TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_API_URL
+from jobs_config import TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_API_URL
 from models import PaysystemPurse, ShopPurse, Shop, CurrencyRate, CashGapHistory
 
 from jobs import _Job

@@ -4,7 +4,7 @@ import json
 from peewee import (Model, CharField, DateTimeField, ForeignKeyField, TextField, IntegerField, DecimalField,
                     BooleanField, datetime as peewee_datetime)
 from playhouse.pool import PooledPostgresqlExtDatabase
-from config import TRIO_DB_CONFIG
+from jobs_config import TRIO_DB_CONFIG
 
 SUCCESS_INVOICE_STATUS = 3
 
