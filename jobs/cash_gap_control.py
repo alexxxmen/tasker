@@ -9,33 +9,33 @@ import requests
 from peewee import fn
 
 from roller import fh
-from utils import Struct, Logger
+from utils import Struct
 from constants import ShopType
 from config import TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_API_URL
 from models import PaysystemPurse, ShopPurse, Shop, CurrencyRate, CashGapHistory
 
-log = Logger('Script logger', fh)
+from jobs import _Job
 
 NOT_SYSTEM_SHOP_ID = 300000
 
 EXCEPTIONAL_SYSTEM_SHOPS = ("100100", "100200", "100300")
 
-CURRENCIES = {'USD': 840, 'RUR': 643, 'EUR': 978, 'UAH': 980}
+CURRENCIES = {'USD': 840, 'RUR': 643, 'EUR': 978, 'UAH': 980}  # TODO, get from DB
 
 
-def run(**kwargs):
-    try:
-        log.debug('Script started at %s' % datetime.datetime.now())
+class CashGapCheckJob(_Job):
+    def _execute(self, **kwargs):
+        self.log.debug("Started")
         required_attrs = ("alarm_list", "delta")
         for attr in required_attrs:
             if attr not in kwargs:
-                log.debug('Missed "%s" argument in "%s"' % (attr, kwargs))
+                self.log.debug('Missed "%s" argument in "%s"' % (attr, kwargs))
                 raise Exception('Missed "%s" argument in "%s"' % (attr, kwargs))
 
         alarm_list = kwargs['alarm_list']
         delta = kwargs['delta']
         if not len(alarm_list) and not delta:
-            log.debug('Empty parameters. Alarm list=%s, delta=%s' % (alarm_list, delta))
+            self.log.debug('Empty parameters. Alarm list=%s, delta=%s' % (alarm_list, delta))
             raise Exception('Empty parameters. Alarm list=%s, delta=%s' % (alarm_list, delta))
 
         ps_purses = (PaysystemPurse
@@ -69,7 +69,7 @@ def run(**kwargs):
             }
         })
 
-        CashGapHistory.create(cash_gap=diff, courses=courses)
+        CashGapHistory.create(cash_gap=diff, currency_rates=courses)
         if Decimal(str(diff)) < prev_diff:
             difference = abs(Decimal(str(diff)) - prev_diff)
             text = 'Текущий кассовый разрыв %s грн., предыдущий %s грн.\nРазница составила %s, при дельте %s.' % \
@@ -77,8 +77,6 @@ def run(**kwargs):
             if difference >= delta:
                 for id in alarm_list:
                     send_alarm_message(TELEGRAM_BOT_API_URL, TELEGRAM_BOT_TOKEN, id, text)
-    except Exception:
-        log.exception('Exception during run script')
 
 
 def send_alarm_message(url, token, id, text):

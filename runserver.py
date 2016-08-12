@@ -3,5 +3,5 @@
 from roller import app
 
 if __name__ == "__main__":
-    print 'starting scheduler'
-    app.run(debug=True, host="0.0.0.0", port=4444)
+    print 'starting roller'
+    app.run(debug=False, host="0.0.0.0", port=5120)
