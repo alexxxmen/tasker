@@ -7,6 +7,7 @@ import logging
 from flask import Flask
 from apscheduler.schedulers.background import BackgroundScheduler
 
+import config
 from config import JOBSTORES, EXECUTORS, JOB_DEFAULTS, LOGGER, LOG_TO
 from utils import Logger
 

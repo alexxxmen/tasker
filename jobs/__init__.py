@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from roller import fh
 from utils import Logger, send_email, as_text
-from config import SMTP_SETTINGS, ERROR_EMAILS
+from roller.config import SMTP_SETTINGS, ERROR_EMAILS
 
 log = Logger("General", fh)
 
