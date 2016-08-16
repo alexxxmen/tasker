@@ -56,8 +56,9 @@ class CashGapCheckJob(_Job):
                     total_diff_balances.append(balance)
 
         total_uah = _get_total_uah(total_diff_balances)
-        diff = total_uah.diff
+        diff = Decimal(total_uah.diff).quantize(Decimal('.0000'))
         prev_diff = CashGapHistory.select(CashGapHistory.cash_gap).order_by(-CashGapHistory.created).first().cash_gap or 0
+        prev_diff = Decimal(prev_diff).quantize(Decimal('.0000'))
 
         courses = json.dumps({
             'UAH': {
@@ -67,11 +68,11 @@ class CashGapCheckJob(_Job):
             }
         })
 
-        CashGapHistory.create(cash_gap=diff, currency_rates=courses)
-        if Decimal(str(diff)) < prev_diff:
-            difference = abs(Decimal(str(diff)) - prev_diff)
+        CashGapHistory.create(cash_gap=diff, courses=courses)
+        if diff < prev_diff:
+            difference = abs(diff - prev_diff)
             text = 'Текущий кассовый разрыв %s грн., предыдущий %s грн.\nРазница составила %s, при дельте %s.' % \
-                   (diff, prev_diff, difference.quantize(Decimal('.0000')), delta)
+                   (diff, prev_diff, difference, delta)
             if difference >= delta:
                 for id in alarm_list:
                     send_alarm_message(TELEGRAM_BOT_API_URL, TELEGRAM_BOT_TOKEN, id, text)
