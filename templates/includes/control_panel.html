@@ -1,0 +1,9 @@
+<div id="control-panel" class="right">
+    <h4>Control Panel</h4>
+    <div id="status"><strong>Status: {% if status == 0 %}stopped{% elif status == 1 %}started{% elif status == 2 %}paused{% else %}Unknown{% endif %}</strong></div>
+    <div id="btn-panel">
+        <a href="/pause" id="scheduler-pause" class="btn btn-primary btn-sm">Pause</a>
+        <a href="/resume" id="scheduler-resume" class="btn btn-primary btn-sm">Resume</a><br>
+        <a href="/job/add" id="add-job" class="btn btn-success">Добавить задачу</a>
+    </div>
+</div>
