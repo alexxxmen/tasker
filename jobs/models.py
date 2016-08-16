@@ -103,7 +103,7 @@ class CashGapHistory(BaseModel):
 
     created = DateTimeField(default=peewee_datetime.datetime.now)
     cash_gap = DecimalField()
-    currency_rates = TextField()
+    courses = TextField()  # TODO rename currency_rates
 
     def get_courses(self):
         return json.loads(self.courses)
