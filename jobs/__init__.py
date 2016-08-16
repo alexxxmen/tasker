@@ -16,7 +16,7 @@ class _Job(object):
             self._execute(**kwargs)
         except Exception, e:
             self.log.exception("Error during job execution")
-            subject = 'Произошла ошибка в скрипте %s' % self.__class__.__name__
+            subject = 'Roller Information. Произошла ошибка в скрипте %s' % self.__class__.__name__
             send_email(subject, as_text(e.message),
                        send_from=SMTP_SETTINGS['username'],
                        server=SMTP_SETTINGS['server'],
