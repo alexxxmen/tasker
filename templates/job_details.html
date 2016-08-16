@@ -1,0 +1,118 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include 'includes/control_panel.html' %}
+        <div id="job-form">
+            <form class="form-horizontal" action="{% if job %}{{ url_for('.job_edit', job_id=job.id) }}{% else %}{{ url_for('.job_add') }}{% endif %}" method="POST">
+                <div id="main-job-form">
+                    <h3>Детали задачи</h3>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2" for="name">Название задачи:</label>
+                        <div class="col-xs-7">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Введите название" value="{% if job %}{{ job.name }}{% endif %}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2" for="id">ID задачи:</label>
+                        <div class="col-xs-7">
+                            <input type="text" class="form-control" id="id" name="id" placeholder="Введите id" {% if job %} disabled="disabled" value="{{ job.id }}" {% endif %}>
+                            <span class="help-block">ID задачи должен быть уникальным.</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2" for="func">Ссылка на скрипт:</label>
+                        <div class="col-xs-7">
+                            <input type="text" class="form-control" id="func" name="func" placeholder="Введите ссылку" value="{% if job %}{{ job.func_ref }}{% endif %}">
+                             <span class="help-block">Пример "jobs.test:TestJob.run"</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2" for="kwargs">Параметры скрипта:</label>
+                        <div class="col-xs-7">
+                            <input type="text" class="form-control" id="kwargs" name="kwargs" placeholder="Введите параметры" value="{% if job %}{{ job.kwargs }}{% endif %}">
+                            <span class="help-block">Пример '{"key1": "value1", "key2": "value2"}'</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="job-time" class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label col-xs-4" for="year">Год:</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="year" name="year" placeholder="Год" value="{% if trigger_data %}{{ trigger_data.year }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-4" for="month">Месяц:</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="month" name="month" placeholder="Месяц" value="{% if trigger_data %}{{ trigger_data.month }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-4" for="day">День:</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="day" name="day" placeholder="День" value="{% if trigger_data %}{{ trigger_data.day }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-4" for="week">Неделя:</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="week" name="week" placeholder="Неделя" value="{% if trigger_data %}{{ trigger_data.week }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label col-xs-4" for="day_of_week">День недели:</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="day_of_week" name="day_of_week" placeholder="День недели" value="{% if trigger_data %}{{ trigger_data.day_of_week }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-4" for="hour">Часы:</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="hour" name="hour" placeholder="Часы" value="{% if trigger_data %}{{ trigger_data.hour }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-4" for="minute">Минуты:</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="minute" name="minute" placeholder="Минуты" value="{% if trigger_data %}{{ trigger_data.minute }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-4" for="second">Секунды:</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="second" name="second" placeholder="Секунды" value="{% if trigger_data %}{{ trigger_data.second }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label col-xs-4" for="startdate">Начальная дата:</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="startdate" name="start_date" placeholder="Начальная дата" {% if trigger_data %}disabled="disabled" value="{{ trigger_data.start_date}}"{% endif %}>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-4" for="enddate">Конечная дата:</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="enddate" name="end_date" placeholder="Конечная дата" {% if trigger_data %}disabled="disabled" value="{{ trigger_data.end_date}}"{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <div class="col-xs-offset-3 col-xs-9">
+                      <input type="submit" class="btn btn-primary" value="Сохранить">
+                      <a href="{{ url_for('.index') }}" class="btn btn-default">Отмена</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock content %}
