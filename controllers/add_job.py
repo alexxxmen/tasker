@@ -14,7 +14,7 @@ class AddJobController(SchedulerController):
 
     def _call(self):
         if self._request.method == "GET":
-            return render_template('job_details.html')
+            return render_template('job_details.html', status=self._scheduler.state)
         elif self._request.method != "POST":
             raise Exception("Unexpected request method type '%s'" % self._request.method)
 
@@ -30,7 +30,7 @@ class AddJobController(SchedulerController):
         if job:
             return redirect(url_for('.index'))
         flash("Job wasn't added")
-        return render_template('job_details.html')
+        return render_template('job_details.html', status=self._scheduler.state)
 
     def _verify_job_data(self, data):
         result = {

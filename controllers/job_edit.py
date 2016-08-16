@@ -25,7 +25,7 @@ class JobEditController(SchedulerController):
             trig_data[field.name] = str(field)
 
         if self._request.method == 'GET':
-            return render_template('job_details.html', job=job, trigger_data=trig_data)
+            return render_template('job_details.html', job=job, trigger_data=trig_data, status=self._scheduler.state)
 
         elif self._request.method != "POST":
             raise Exception("Unexpected request method type '%s'" % self._request.method)
