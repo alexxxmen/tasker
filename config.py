@@ -8,7 +8,7 @@ from utils import Struct
 
 LOCALE = 'ru_UA.UTF-8'
 
-LOG_TO = "/home/alex/logs/roller"
+LOG_TO = "/home/alex/work/logs/roller"
 
 # Logging settings
 LOGGER = Struct(
@@ -19,7 +19,15 @@ LOGGER = Struct(
 )
 
 # APScheduler params
-JOBSTORE_URL = 'postgresql://daemon:12345@localhost:5432/daemon'  # TODO
+DB_CONFIG = dict(
+    username='daemon',
+    password=12345,
+    host='localhost',
+    port=5432,
+    database='daemon'
+)
+JOBSTORE_URL = 'postgresql://%s:%s@%s:%s/%s' % (DB_CONFIG['username'], DB_CONFIG['password'], DB_CONFIG['host'],
+                                                DB_CONFIG['port'], DB_CONFIG['database'])
 THREADS = 10
 
 JOBSTORES = {'default': SQLAlchemyJobStore(url=JOBSTORE_URL)}
@@ -32,11 +40,11 @@ JOB_DEFAULTS = {
 SECRET_KEY = 'mbXPvOOm6uBrsJdAjolJ'
 
 SMTP_SETTINGS = dict(
-    server='',
-    port='',
+    server='mail.pay-trio.com',
+    port=587,
     use_tls=True,
-    username='',
-    password=''
+    username='test-roller@pay-trio.com',
+    password='85WPaLEb83'
 )
 
-ERROR_EMAILS = ['petrunin@pay-trio.com', 'krementar@pay-trio.com']
+ERROR_EMAILS = ['petrunin@pay-trio.com']
