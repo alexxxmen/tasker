@@ -1,3 +1,12 @@
+
+#top-panel{
+    height: 80px;
+}
+
+#alert-block{
+    padding-left: 50px;
+}
+
 #task-group{
     padding: 20px;
     border: solid 1px #DCDCDC;
@@ -24,6 +33,25 @@
     width: 80%;
 }
 
+#job-form{
+    width: 80%;
+}
+
 #task-list .btn-group{
     margin-top: 10px;
+}
+
+#error{
+    font-size: 1.4em;
+    color: #A52A2A;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.help-block{
+    font-size: 12px;
+}
+
+#main-job-form{
+    margin-bottom: 30px;
 }

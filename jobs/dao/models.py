@@ -1,28 +1,9 @@
 # -*- coding: utf8 -*-
 import json
 
-from peewee import (Model, CharField, DateTimeField, ForeignKeyField, TextField, IntegerField, DecimalField,
+from peewee import (CharField, DateTimeField, ForeignKeyField, TextField, IntegerField, DecimalField,
                     BooleanField, datetime as peewee_datetime)
-from playhouse.pool import PooledPostgresqlExtDatabase
-from config import TRIO_DB_CONFIG
-
-SUCCESS_INVOICE_STATUS = 3
-
-trio_db = PooledPostgresqlExtDatabase(**TRIO_DB_CONFIG)
-trio_db.commit_select = True
-trio_db.autorollback = True
-
-
-class BaseModel(Model):
-    class Meta:
-        database = trio_db
-
-    @classmethod
-    def get_by_id(cls, id):
-        try:
-            return cls.get(cls.id == id)
-        except cls.DoesNotExist:
-            return None
+from jobs.dao import BaseModel
 
 
 class Account(BaseModel):
@@ -46,7 +27,6 @@ class Shop(BaseModel):
     url = CharField()
     protocol_config = TextField()
     shop_type = IntegerField()
-
 
 
 class Paysystem(BaseModel):
@@ -103,7 +83,7 @@ class CashGapHistory(BaseModel):
 
     created = DateTimeField(default=peewee_datetime.datetime.now)
     cash_gap = DecimalField()
-    courses = TextField()  # TODO переменовать в currency_rates
+    courses = TextField()  # TODO rename currency_rates
 
     def get_courses(self):
         return json.loads(self.courses)

@@ -1,4 +1,3 @@
-import os
 import logging
 from datetime import date
 
@@ -19,8 +18,18 @@ LOGGER = Struct(
     file="log_{date:%Y-%m-%d}.log".format(date=date.today()),
 )
 
+
+DB_CONFIG = dict(
+    username='daemon',
+    password=12345,
+    host='localhost',
+    port=5432,
+    database='daemon'
+)
+
 # APScheduler params
-JOBSTORE_URL = 'postgresql://postgres:testP@ss@localhost:5432/daemon'  # TODO
+JOBSTORE_URL = 'postgresql://%s:%s@%s:%s/%s' % (DB_CONFIG['username'], DB_CONFIG['password'], DB_CONFIG['host'],
+                                                DB_CONFIG['port'], DB_CONFIG['database'])
 THREADS = 10
 
 JOBSTORES = {'default': SQLAlchemyJobStore(url=JOBSTORE_URL)}
@@ -31,3 +40,13 @@ JOB_DEFAULTS = {
 }
 
 SECRET_KEY = 'mbXPvOOm6uBrsJdAjolJ'
+
+SMTP_SETTINGS = dict(
+    server='mail.pay-trio.com',
+    port=587,
+    use_tls=True,
+    username='test-roller@pay-trio.com',
+    password='85WPaLEb83'
+)
+
+ERROR_EMAILS = ['petrunin@pay-trio.com', 'krementar@pay-trio.com']

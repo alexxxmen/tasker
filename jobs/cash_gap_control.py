@@ -2,25 +2,22 @@
 
 import json
 import urllib
-import datetime
 from decimal import Decimal
 
 import requests
 from peewee import fn
 
-from roller import fh
-from utils import Struct
 from constants import ShopType
-from config import TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_API_URL
-from models import PaysystemPurse, ShopPurse, Shop, CurrencyRate, CashGapHistory
-
 from jobs import _Job
+from jobs.dao.models import PaysystemPurse, ShopPurse, Shop, CurrencyRate, CashGapHistory
+from jobs.jobs_config import TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_API_URL
+from utils import Struct
 
 NOT_SYSTEM_SHOP_ID = 300000
 
 EXCEPTIONAL_SYSTEM_SHOPS = ("100100", "100200", "100300")
 
-CURRENCIES = {'USD': 840, 'RUR': 643, 'EUR': 978, 'UAH': 980}  #  TODO, get from DB
+CURRENCIES = {'USD': 840, 'RUR': 643, 'EUR': 978, 'UAH': 980}  # TODO, get from DB
 
 
 class CashGapCheckJob(_Job):
@@ -58,8 +55,10 @@ class CashGapCheckJob(_Job):
                     total_diff_balances.append(balance)
 
         total_uah = _get_total_uah(total_diff_balances)
-        diff = total_uah.diff
+
+        diff = Decimal(total_uah.diff).quantize(Decimal('.0000'))
         prev_diff = CashGapHistory.select(CashGapHistory.cash_gap).order_by(-CashGapHistory.created).first().cash_gap or 0
+        prev_diff = Decimal(prev_diff).quantize(Decimal('.0000'))
 
         courses = json.dumps({
             'UAH': {
@@ -70,10 +69,12 @@ class CashGapCheckJob(_Job):
         })
 
         CashGapHistory.create(cash_gap=diff, courses=courses)
-        if Decimal(str(diff)) < prev_diff:
-            difference = abs(Decimal(str(diff)) - prev_diff)
+
+        if diff < prev_diff:
+            difference = abs(diff - prev_diff)
             text = 'Текущий кассовый разрыв %s грн., предыдущий %s грн.\nРазница составила %s, при дельте %s.' % \
-                   (diff, prev_diff, difference.quantize(Decimal('.0000')), delta)
+                   (diff, prev_diff, difference, delta)
+
             if difference >= delta:
                 for id in alarm_list:
                     send_alarm_message(TELEGRAM_BOT_API_URL, TELEGRAM_BOT_TOKEN, id, text)

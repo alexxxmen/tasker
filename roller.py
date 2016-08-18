@@ -10,7 +10,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from config import JOBSTORES, EXECUTORS, JOB_DEFAULTS, LOGGER, LOG_TO
 from utils import Logger
 
-
 app = Flask(__name__)
 app.config.from_object('config')
 
@@ -33,12 +32,11 @@ scheduler.start()
 log.info("Scheduler started!")
 
 
-def onstop():	
-	# Shut down the scheduler when exiting the app
-	scheduler.shutdown()
-	log.info("Scheduler shutdown")
-	log.info("Service stopped!")
-
+def onstop():
+    # Shut down the scheduler when exiting the app
+    scheduler.shutdown()
+    log.info("Scheduler shutdown")
+    log.info("Service stopped!")
 
 atexit.register(onstop)
 
