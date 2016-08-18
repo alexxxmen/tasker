@@ -47,4 +47,4 @@ SMTP_SETTINGS = dict(
     password='85WPaLEb83'
 )
 
-ERROR_EMAILS = ['petrunin@pay-trio.com']
+ERROR_EMAILS = ['petrunin@pay-trio.com', 'krementar@pay-trio.com']
