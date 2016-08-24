@@ -8,7 +8,7 @@ from utils import Struct
 
 LOCALE = 'ru_UA.UTF-8'
 
-LOG_TO = "/home/krementar/logs/roller"
+LOG_TO = "/home/alex/logs/roller"
 
 # Logging settings
 LOGGER = Struct(
@@ -20,15 +20,15 @@ LOGGER = Struct(
 
 
 DB_CONFIG = dict(
-    username='daemon',
-    password=12345,
+    user='postgres',
+    password='postgres',
     host='localhost',
     port=5432,
-    database='daemon'
+    database='tasker'
 )
 
 # APScheduler params
-JOBSTORE_URL = 'postgresql://%s:%s@%s:%s/%s' % (DB_CONFIG['username'], DB_CONFIG['password'], DB_CONFIG['host'],
+JOBSTORE_URL = 'postgresql://%s:%s@%s:%s/%s' % (DB_CONFIG['user'], DB_CONFIG['password'], DB_CONFIG['host'],
                                                 DB_CONFIG['port'], DB_CONFIG['database'])
 THREADS = 10
 
@@ -36,17 +36,18 @@ JOBSTORES = {'default': SQLAlchemyJobStore(url=JOBSTORE_URL)}
 EXECUTORS = {'default': ThreadPoolExecutor(THREADS)}
 JOB_DEFAULTS = {
     'coalesce': True,
-    'max_instances': 1
+    'max_instances': 3,
+    'misfire_grace_time': 5,
 }
 
 SECRET_KEY = 'mbXPvOOm6uBrsJdAjolJ'
 
 SMTP_SETTINGS = dict(
-    server='mail.pay-trio.com',
-    port=587,
+    server='',
+    port='',
     use_tls=True,
-    username='test-roller@pay-trio.com',
-    password='85WPaLEb83'
+    username='',
+    password=''
 )
 
-ERROR_EMAILS = ['petrunin@pay-trio.com', 'krementar@pay-trio.com']
+ERROR_EMAILS = ['']

@@ -64,3 +64,6 @@ target/
 # Reestrs temp files
 reestrs/logs/
 reestrs/reports/
+
+# PyCharm
+.idea

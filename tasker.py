@@ -3,6 +3,7 @@
 import os
 import atexit
 import logging
+from pytz import utc
 
 from flask import Flask
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -25,8 +26,9 @@ log = Logger("Roller", fh)
 log.info("Service started!")
 
 sched_log = Logger("apscheduler.executors.default", fh)
+sched_log_jobstore = Logger("apscheduler.jobstores.default", fh)
 
-scheduler = BackgroundScheduler(jobstores=JOBSTORES, executors=EXECUTORS, job_defaults=JOB_DEFAULTS)
+scheduler = BackgroundScheduler(jobstores=JOBSTORES, executors=EXECUTORS, job_defaults=JOB_DEFAULTS, timezone=utc)
 scheduler.start()
 
 log.info("Scheduler started!")

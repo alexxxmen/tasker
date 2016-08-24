@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from roller import app, scheduler
+from tasker import app, scheduler
 from controllers.handle_scheduler import HandleSchedulerController
 from controllers.add_job import AddJobController
 from controllers.job_edit import JobEditController

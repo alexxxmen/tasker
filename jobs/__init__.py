@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
-from roller import fh
-
+from tasker import fh
 from utils import Logger, send_email, as_text
 from config import SMTP_SETTINGS, ERROR_EMAILS
 
@@ -14,17 +13,20 @@ class _Job(object):
 
     def execute(self, **kwargs):
         try:
+            self.log.debug("Start job with kwargs=%s" % kwargs)
             self._execute(**kwargs)
-        except Exception, e:
+            self.log.debug("Finish job successful")
+        except Exception as e:
             self.log.exception("Error during job execution")
-            subject = 'Roller Information. Произошла ошибка в скрипте %s' % self.__class__.__name__
-            send_email(subject, as_text(e.message),
-                       send_from=SMTP_SETTINGS['username'],
-                       server=SMTP_SETTINGS['server'],
-                       port=SMTP_SETTINGS['port'],
-                       user=SMTP_SETTINGS['username'],
-                       passwd=SMTP_SETTINGS['password'],
-                       dest_to=ERROR_EMAILS)
+            subject = 'Tasker Information. Произошла ошибка в скрипте %s' % self.__class__.__name__
+            self.log.debug(subject)
+            # send_email(subject, as_text(e.message),
+            #            send_from=SMTP_SETTINGS['username'],
+            #            server=SMTP_SETTINGS['server'],
+            #            port=SMTP_SETTINGS['port'],
+            #            user=SMTP_SETTINGS['username'],
+            #            passwd=SMTP_SETTINGS['password'],
+            #            dest_to=ERROR_EMAILS)
 
     def _execute(self, **kwargs):
         raise NotImplementedError("%s._execute" % self.__class__.__name__)

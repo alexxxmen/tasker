@@ -2,11 +2,11 @@
 
 from peewee import Model
 from playhouse.pool import PooledPostgresqlExtDatabase
-from jobs.jobs_config import TRIO_DB_CONFIG
+from jobs.jobs_config import DB_CONFIG
 
 SUCCESS_INVOICE_STATUS = 3
 
-trio_db = PooledPostgresqlExtDatabase(**TRIO_DB_CONFIG)
+trio_db = PooledPostgresqlExtDatabase(**DB_CONFIG)
 trio_db.commit_select = True
 trio_db.autorollback = True
 

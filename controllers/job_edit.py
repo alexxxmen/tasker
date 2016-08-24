@@ -14,12 +14,12 @@ class JobEditController(SchedulerController):
         super(JobEditController, self).__init__(request, scheduler)
 
     def _call(self):
+
         job = self._scheduler.get_job(self.job_id)
         if not job:
             self.log.debug('Job not found. Job id=%s' % self.job_id)
             flash('Job not found')
             return redirect(url_for('.index'))
-
         trig_data = {}
         for field in job.trigger.fields:
             trig_data[field.name] = str(field)
